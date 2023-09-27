@@ -13,7 +13,6 @@ from .. import utils
 
 class GoodtablesValidator(Validator):
     def validate(self, source, content_type):
-
         if content_type == "application/json":
             data = utils.to_tabular(source)
         elif content_type == "text/csv":
