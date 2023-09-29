@@ -27,7 +27,7 @@
         {% if object.status == 'LOADING' %}
         <a class="usa-button" href="{% url 'data_ingest:review-errors' object.id %}">Load</a>
         {% endif %} {% if object.status == 'STAGED' %}
-        <a class="usa-button" href="{% url 'insert' object.id %}">Insert</a>
+        <a class="usa-button" href="{% url 'data_ingest:insert' object.id %}">Insert</a>
         {% endif %}
     </div>
 
