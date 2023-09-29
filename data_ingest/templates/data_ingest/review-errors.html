@@ -3,65 +3,70 @@
 {% block content %}
 
 <div class="usa-grid" style="overflow: auto">
-<h1>Errors in Submission {{upload_id}}</h1>
-<h2>Review errors</h2>
+  <h1>Errors in Submission {{upload_id}}</h1>
+  <h2>Review errors</h2>
 
-      <p>
-        We found {{ whole_table_errors | length }} whole-table
-        error{{ whole_table_errors | length | pluralize }}
-          {% if not whole_table_errors %}
-          , {{ valid_row_count }} valid row{{ valid_row_count | length | pluralize }},
-          {% endif %}
-        and {{ invalid_row_count }} invalid row{{ invalid_row_count|pluralize }}
-        in your data.
-      </p>
+  <p>
+    We found {{ whole_table_errors | length }} whole-table
+    error{{ whole_table_errors | length | pluralize }}
+    {% if not whole_table_errors %}
+    , {{ valid_row_count }} valid row{{ valid_row_count | length | pluralize }},
+    {% endif %}
+    and {{ invalid_row_count }} invalid row{{ invalid_row_count|pluralize }}
+    in your data.
+  </p>
 
-      <p>
-        You can correct the errors
-                  in your original file and
-                  <a href="{% url 'upload' upload_id %}?{{ file_metadata }}">
-                  try uploading it again</a>
-        {% if valid_row_count and not whole_table_errors %}
-          or <a href="{% url 'confirm-upload' upload_id %}">continue,
-          leaving these rows out</a>
-        {% endif %}
-      . </p>
+  <p>
+    You can correct the errors
+    in your original file and
+    <a href="{% url 'data_ingest:upload' upload_id %}?{{ file_metadata }}">
+      try uploading it again</a>
+    {% if valid_row_count and not whole_table_errors %}
+    or <a href="{% url 'data_ingest:confirm-upload' upload_id %}">continue,
+      leaving these rows out</a>
+    {% endif %}
+    .
+  </p>
 
-      <div class="message message-error no-bg" role="alert">
-        {% if whole_table_errors %}
-          <h3>Whole-table errors</h3>
-            <ul>
-              {% for wte in whole_table_errors %}
-                <li>{{ wte.severity }} &mdash; {{ wte.message }}</li>
-              {% endfor %}
-            </ul>
-        {% endif %}
-      </div>
+  <div class="message message-error no-bg" role="alert">
+    {% if whole_table_errors %}
+    <h3>Whole-table errors</h3>
+    <ul>
+      {% for wte in whole_table_errors %}
+      <li>{{ wte.severity }} &mdash; {{ wte.message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
 
-      <table>
-        <thead>
-            <th>Row #</th><th>Severity</th></th><th>Error code</th><th>message</th>
-          {% for h in headers %}
-            <th>{{ h }}</th>
-          {% endfor %}
-        </thead>
-        <tbody>
-        {% for row in rows %}
-          {% for err in row.errors %}
-          <tr>
-            <td>{{ row.row_number }}</td>
-            <td>{{ err.severity }}</td>
-            <td>{{ err.code }}</td>
-            <td>{{ err.message }}</td>
-            {% for h in headers %}
-            <td {% if h in err.error_columns %} class="bad-value" style="color:red;" {% endif %}
-            >{{ row.data | get_value:h }}</td>
+  <table>
+    <thead>
+      <th>Row #</th>
+      <th>Severity</th>
+      </th>
+      <th>Error code</th>
+      <th>message</th>
+      {% for h in headers %}
+      <th>{{ h }}</th>
+      {% endfor %}
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      {% for err in row.errors %}
+      <tr>
+        <td>{{ row.row_number }}</td>
+        <td>{{ err.severity }}</td>
+        <td>{{ err.code }}</td>
+        <td>{{ err.message }}</td>
+        {% for h in headers %}
+        <td {% if h in err.error_columns %} class="bad-value" style="color:red;" {% endif %}>{{ row.data | get_value:h
+          }}</td>
 
-            {% endfor %}
-          </tr>
-          {% endfor %}
         {% endfor %}
-        </tbody>
-      </table>
+      </tr>
+      {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock content %}
