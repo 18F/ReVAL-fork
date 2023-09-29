@@ -84,9 +84,10 @@
 
   <main id="main-content">
     {% block messages %}
-    {% if messages %}}
+    {% if messages %}
     <section class="usa-grid alert-section">
-      {% include 'messages.html' %}
+      <!-- {% include 'messages.html' %} -->
+      <h1>Was this the source of the error?</h1>
     </section>
     {% endif %}
     {% endblock messages %}
