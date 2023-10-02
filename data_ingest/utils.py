@@ -67,13 +67,19 @@ def to_tabular(incoming):
     # if we are going through the API, the JSONDecoder already
     # converts the source JSON to a python dictionary for us.
     jsonbuffer = None
+
     try:
+        print("🐶")
+        print(data["source"])
         jsonbuffer = json.loads(data["source"].decode())
+        print("🦁")
     except (TypeError, KeyError, AttributeError):
+        print("🐯")
         jsonbuffer = data["source"]
 
     headers = set()
     for row in jsonbuffer:
+        print("🐭", row)
         for header in row.keys():
             headers.add(header)
 

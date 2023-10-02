@@ -195,7 +195,7 @@ class RowwiseValidator(Validator):
             print("🇸🇬 end json")
             data = utils.to_tabular({"source": source})
         elif content_type == "text/csv":
-            prin("🇸🇨 csv")
+            print("🇸🇨 csv")
             print(source)
             print("🇸🇬 end csv")
             data = utils.reorder_csv(source)
