@@ -46,6 +46,16 @@ def get_ordered_headers(headers):
     return o_headers
 
 
+def process_row(data_dict, headers):
+    row_data = []
+    for header in headers:
+        logger.debug(f"Fetching: {header}")
+        val = data_dict.get(header, None)
+        row_data.append(val)
+        logger.debug(f"Set to: {val}")
+    return row_data
+
+
 def to_tabular(incoming):
     """Coerce incoming json to tabular structure for tabulator
     [
@@ -59,35 +69,34 @@ def to_tabular(incoming):
     are data rows containing data values in the order of headers defined
     in the first row.
     """
+    if incoming is None:
+        return incoming
 
-    """
-    The newer version of code uses json buffer, but is having issues with Django 2
-    compatibility. It seems like json buffer returns the data in a different format,
-    so there is no "source" data element, I am reverting this function to how it was
-    written in an earlier version.
+    data = incoming.copy()
 
-    Here is the commit with the json buffer version that I rolled back for reference:
-    https://github.com/18F/ReVAL/blob/master/data_ingest/utils.py#L44C1-L87C30
+    # if we are going through the API, the JSONDecoder already
+    # converts the source JSON to a python dictionary for us.
+    jsonbuffer = None
 
-    """
+    try:
+        jsonbuffer = json.loads(data["source"].decode())
+    except (TypeError, KeyError, AttributeError):
+        jsonbuffer = data
+
     headers = set()
 
-    for row in incoming:
-        for header in row.keys():
-            headers.add(header)
-
-    headers = list(headers)
+    # If dict of values appear in a list, I assume there may be more than one dict of values
+    # This should work with one or more values.
+    for data_dict in jsonbuffer:
+        headers = headers.union(set(data_dict.keys()))
     o_headers = get_ordered_headers(headers)
+
     output = [o_headers]
 
-    for row in incoming:
-        row_data = []
-        for header in o_headers:
-            logger.debug(f"Fetching: {header}")
-            val = row.get(header, None)
-            row_data.append(val)
-            logger.debug(f"Set to: {val}")
+    for data_dict in jsonbuffer:
+        row_data = process_row(data_dict, o_headers)
         output.append(row_data)
+
     return output
 
 
