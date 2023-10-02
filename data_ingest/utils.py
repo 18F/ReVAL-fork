@@ -77,18 +77,16 @@ def to_tabular(incoming):
         print("🐯")
         jsonbuffer = data["source"]
 
-    headers = set()
-    for row in jsonbuffer:
-        print("🐭", row)
-        for header in row.keys():
-            headers.add(header)
-
-    headers = list(headers)
+    headers = []
+    for json_key in jsonbuffer:
+        print("🐭", json_key)
+        headers.append(json_key)
 
     o_headers = get_ordered_headers(headers)
 
     output = [o_headers]
-    for row in jsonbuffer:
+    for json_key in jsonbuffer:
+        row = jsonbuffer[json_key]
         row_data = []
         for header in o_headers:
             logger.debug(f"Fetching: {header}")
