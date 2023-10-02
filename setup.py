@@ -34,8 +34,7 @@ setup(
         "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     ],
     install_requires=[
-        # todo: make this a range
-        "django==3.2.21",
+        "django >3.2, <=3.3",
         "djangorestframework",
         "dj-database-url",
         "goodtables",

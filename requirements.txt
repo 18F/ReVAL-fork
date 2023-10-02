@@ -1,4 +1,4 @@
-# Documenting what I can get running locally, I am having issues with pipenv
+# Documenting what I can get running locally as part of the Django 3 update, not using this directly
 asgiref==3.4.1
 attrs==22.2.0
 boto3==1.23.10
