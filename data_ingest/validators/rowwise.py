@@ -189,7 +189,7 @@ class RowwiseValidator(Validator):
         """
 
         if content_type == "application/json":
-            data = utils.to_tabular(source)
+            data = utils.to_tabular({"source": source})
         elif content_type == "text/csv":
             data = utils.reorder_csv(source)
         else:
@@ -198,8 +198,7 @@ class RowwiseValidator(Validator):
         (headers, numbered_rows) = Validator.rows_from_source(data)
         output = ValidatorOutput(numbered_rows, headers=headers)
 
-        for (rn, row) in numbered_rows.items():
-
+        for rn, row in numbered_rows.items():
             # This is to remove the header row
             if rn == UPLOAD_SETTINGS["OLD_HEADER_ROW"]:
                 continue
@@ -222,7 +221,6 @@ class RowwiseValidator(Validator):
                     if rule["code"] and not self.invert_if_needed(
                         self.evaluate(rule["code"], row)
                     ):
-
                         output.add_row_error(
                             rn,
                             rule.get("severity", "Error"),
