@@ -24,7 +24,7 @@ def validators():
     :return: Iterator of Validator instances
 
     """
-    for (filename, validator_type) in UPLOAD_SETTINGS["VALIDATORS"].items():
+    for filename, validator_type in UPLOAD_SETTINGS["VALIDATORS"].items():
         validator = import_string(validator_type)(
             name=validator_type, filename=filename
         )
@@ -32,7 +32,6 @@ def validators():
 
 
 def apply_validators_to(source, content_type):
-
     overall_result = {}
     for validator in validators():
         validation_results = validator.validate(source, content_type)
@@ -168,7 +167,7 @@ class ValidatorOutput:
             if isinstance(self.rows_in_dict, dict)
             else enumerate(self.rows_in_dict)
         )
-        for (row_number, row_data) in rows:
+        for row_number, row_data in rows:
             result.append(
                 {
                     "row_number": row_number,
@@ -244,7 +243,7 @@ class ValidatorOutput:
         table["rows"] = []
 
         # Will assume output1 and output2 have the same number of rows, else you will get unexpected behaviors
-        for (row_number, row) in enumerate(output1["tables"][0]["rows"]):
+        for row_number, row in enumerate(output1["tables"][0]["rows"]):
             table["rows"].append(
                 {
                     "row_number": row["row_number"],
@@ -276,7 +275,6 @@ class ValidatorOutput:
 # configured headers) and INVERT_LOGIC (apply a `not` operation to the
 # results) boolean options.
 class Validator(abc.ABC):
-
     SUPPORTS_HEADER_OVERRIDE = False
     INVERT_LOGIC = False
 
@@ -370,7 +368,7 @@ class Validator(abc.ABC):
         o_headers = utils.get_ordered_headers(hs)
 
         result = OrderedDict()
-        for (row_num, headers, vals) in stream.iter(extended=True):
+        for row_num, headers, vals in stream.iter(extended=True):
             data = dict(zip(headers, vals))
             o_data = OrderedDict((h, data.get(h, "")) for h in o_headers)
             result[row_num] = o_data

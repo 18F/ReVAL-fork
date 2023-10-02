@@ -6,25 +6,30 @@ from collections import OrderedDict
 from django.utils.module_loading import import_string
 from .ingest_settings import UPLOAD_SETTINGS
 
-logger = logging.getLogger('ReVAL')
+logger = logging.getLogger("ReVAL")
 
 
 def get_schema_headers():
     ordered_header = []
 
-    good_table_validator = 'data_ingest.ingestors.GoodtablesValidator'
-    schema = [loc for loc, val_type in UPLOAD_SETTINGS['VALIDATORS'].items()
-              if val_type == good_table_validator and loc is not None]
+    good_table_validator = "data_ingest.ingestors.GoodtablesValidator"
+    schema = [
+        loc
+        for loc, val_type in UPLOAD_SETTINGS["VALIDATORS"].items()
+        if val_type == good_table_validator and loc is not None
+    ]
     if schema:
-        validator = import_string(good_table_validator)(name=good_table_validator, filename=schema[0])
+        validator = import_string(good_table_validator)(
+            name=good_table_validator, filename=schema[0]
+        )
         contents = validator.get_validator_contents()
-        ordered_header = [field['name'] for field in contents.get('fields', [])]
+        ordered_header = [field["name"] for field in contents.get("fields", [])]
     return ordered_header
 
 
 def get_ordered_headers(headers):
-    if isinstance(UPLOAD_SETTINGS['STREAM_ARGS']['headers'], list):
-        return UPLOAD_SETTINGS['STREAM_ARGS']['headers']
+    if isinstance(UPLOAD_SETTINGS["STREAM_ARGS"]["headers"], list):
+        return UPLOAD_SETTINGS["STREAM_ARGS"]["headers"]
 
     correct_headers = get_schema_headers()
     if correct_headers == headers:
@@ -54,72 +59,74 @@ def to_tabular(incoming):
     are data rows containing data values in the order of headers defined
     in the first row.
     """
-    if incoming.get('source') is None:
-        return incoming
 
-    data = incoming.copy()
+    """
+    The newer version of code uses json buffer, but is having issues with Django 2
+    compatibility. It seems like json buffer returns the data in a different format,
+    so there is no "source" data element, I am reverting this function to how it was
+    written in an earlier version.
 
-    # if we are going through the API, the JSONDecoder already
-    # converts the source JSON to a python dictionary for us.
-    jsonbuffer = None
-    try:
-        jsonbuffer = json.loads(data["source"].decode())
-    except (TypeError, KeyError, AttributeError):
-        jsonbuffer = data['source']
+    Here is the commit with the json buffer version that I rolled back for reference:
+    https://github.com/18F/ReVAL/blob/master/data_ingest/utils.py#L44C1-L87C30
 
+    """
     headers = set()
-    for row in jsonbuffer:
+
+    for row in incoming:
         for header in row.keys():
             headers.add(header)
 
     headers = list(headers)
-
     o_headers = get_ordered_headers(headers)
-
     output = [o_headers]
-    for row in jsonbuffer:
+
+    for row in incoming:
         row_data = []
         for header in o_headers:
             logger.debug(f"Fetching: {header}")
             val = row.get(header, None)
             row_data.append(val)
-            logger.debug(f'Set to: {val}')
+            logger.debug(f"Set to: {val}")
         output.append(row_data)
     return output
 
 
 def reorder_csv(incoming):
-    if incoming.get('source') is None:
+    if incoming.get("source") is None:
         return incoming
 
     data = incoming.copy()
 
-    csvbuffer = io.StringIO(data['source'].decode('UTF-8'))
+    csvbuffer = io.StringIO(data["source"].decode("UTF-8"))
 
     output = io.StringIO()
     headers = []
     header_mapping = {}
     writer = None
     # This will make sure empty lines are not deleted
-    lines = (',' if line.isspace() else line for line in csvbuffer)
+    lines = ("," if line.isspace() else line for line in csvbuffer)
 
     for row in csv.DictReader(lines):
         if not headers:
             # write headers first
             headers = get_ordered_headers(list(row.keys()))
-            writer = csv.DictWriter(output, fieldnames=headers, extrasaction='ignore', lineterminator='\n')
+            writer = csv.DictWriter(
+                output, fieldnames=headers, extrasaction="ignore", lineterminator="\n"
+            )
             writer.writeheader()
-            if (isinstance(UPLOAD_SETTINGS['STREAM_ARGS']['headers'], list)):
+            if isinstance(UPLOAD_SETTINGS["STREAM_ARGS"]["headers"], list):
                 header_mapping = dict(zip(row.keys(), headers))
         # If there's extra item in the row
         if row.get(None):
-            vals = [row.get(header, '') for header in headers]
+            vals = [row.get(header, "") for header in headers]
             vals.extend(row.get(None))
             write_row = ",".join(vals)
 
-            output.write(write_row + '\n')
+            output.write(write_row + "\n")
         else:
-            writer.writerow(OrderedDict([(header_mapping.get(k, k), v) for k, v in row.items()]))
+            writer.writerow(
+                OrderedDict([(header_mapping.get(k, k), v) for k, v in row.items()])
+            )
 
-    data['source'] = output.getvalue().encode('UTF-8')
+    data["source"] = output.getvalue().encode("UTF-8")
     return data

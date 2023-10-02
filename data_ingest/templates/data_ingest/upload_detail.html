@@ -3,32 +3,33 @@
 {% block content %}
 <div class='usa-grid'>
 
-<h1>Submission: {{object.id}}</h1>
-<table>
-    <tr>
-        <th>Status</th>
-        <th>Uploaded at</th>
-        {% for k, v in object.descriptive_fields.items %}
-        <th>{{ k }}</th>
-        {% endfor %}
-    </tr>
-    <tr>
-        <td>{{ object.status }}</td>
-        <td>{{ object.created_at }}</td>
-        {% for k, v in object.descriptive_fields.items %}
-        <td>{{ v }}</td>
-        {% endfor %}
-    </tr>
-</table>
+    <h1>Submission: {{object.id}}</h1>
+    <table>
+        <tr>
+            <th>Status</th>
+            <th>Uploaded at</th>
+            {% for k, v in object.descriptive_fields.items %}
+            <th>{{ k }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>{{ object.status }}</td>
+            <td>{{ object.created_at }}</td>
+            {% for k, v in object.descriptive_fields.items %}
+            <td>{{ v }}</td>
+            {% endfor %}
+        </tr>
+    </table>
 
-<div id="actions">
-    <a class="usa-button" href="{% url 'upload' object.id %}?{{ object.file_metadata_as_params }}">Reload</a>
-    {% if object.status == 'LOADING' %}
-    <a class="usa-button" href="{% url 'review-errors' object.id %}">Load</a>
-    {% endif %} {% if object.status == 'STAGED' %}
-    <a class="usa-button" href="{% url 'insert' object.id %}">Insert</a>
-    {% endif %}
-</div>
+    <div id="actions">
+        <a class="usa-button"
+            href="{% url 'data_ingest:upload' object.id %}?{{ object.file_metadata_as_params }}">Reload</a>
+        {% if object.status == 'LOADING' %}
+        <a class="usa-button" href="{% url 'data_ingest:review-errors' object.id %}">Load</a>
+        {% endif %} {% if object.status == 'STAGED' %}
+        <a class="usa-button" href="{% url 'data_ingest:insert' object.id %}">Insert</a>
+        {% endif %}
+    </div>
 
 </div>
 
