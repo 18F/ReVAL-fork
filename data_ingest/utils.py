@@ -80,12 +80,13 @@ def to_tabular(incoming):
 
     try:
         print("🐶")
+        print(type(data))
         print(data)
         jsonbuffer = json.loads(data["source"].decode())
         print("🦁")
     except (TypeError, KeyError, AttributeError):
         print("🐯 ERROR")
-        jsonbuffer = data["source"]
+        jsonbuffer = data.decode()["source"]
 
     headers = set()
 
