@@ -85,13 +85,14 @@ def to_tabular(incoming):
         print("🦁")
     except (TypeError, KeyError, AttributeError):
         print("🐯 ERROR")
-        jsonbuffer = data
+        jsonbuffer = data["source"]
 
     headers = set()
 
     # If dict of values appear in a list, I assume there may be more than one dict of values
     # This should work with one or more values.
     for data_dict in jsonbuffer:
+        print("🥸 ", data_dict)
         headers = headers.union(set(data_dict.keys()))
     o_headers = get_ordered_headers(headers)
 
