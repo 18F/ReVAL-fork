@@ -81,7 +81,7 @@ def to_tabular(incoming):
     try:
         print("🐶")
         print(data)
-        jsonbuffer = json.loads(data.decode())
+        jsonbuffer = json.loads(data["source"].decode())
         print("🦁")
     except (TypeError, KeyError, AttributeError):
         print("🐯 ERROR")
