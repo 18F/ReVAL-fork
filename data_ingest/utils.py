@@ -47,6 +47,7 @@ def get_ordered_headers(headers):
 
 
 def process_row(row, headers):
+    print("➡️", header, type(row), row)
     row_data = []
     for header in headers:
         logger.debug(f"Fetching: {header}")
