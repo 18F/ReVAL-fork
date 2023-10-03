@@ -47,7 +47,6 @@ def get_ordered_headers(headers):
 
 
 def process_row(data_dict, headers):
-    print("➡️", headers, type(data_dict), data_dict)
     row_data = []
     for header in headers:
         logger.debug(f"Fetching: {header}")
@@ -80,14 +79,10 @@ def to_tabular(incoming):
     jsonbuffer = None
 
     try:
-        # print("🐶")
-        # print(type(data))
-        # print(data)
         jsonbuffer = json.loads(data["source"].decode())
-        print("🦁", jsonbuffer)
     except (TypeError, KeyError, AttributeError):
-        print("🐯 ERROR")
-        jsonbuffer = data.decode()["source"]
+        print("🚀", type(data), data)
+        jsonbuffer = data
 
     headers = set()
 
@@ -100,7 +95,6 @@ def to_tabular(incoming):
     output = [o_headers]
 
     for data_dict in jsonbuffer:
-        print("👅", type(data_dict), data_dict)
         row_data = process_row(data_dict, o_headers)
         output.append(row_data)
 

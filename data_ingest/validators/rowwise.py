@@ -81,7 +81,6 @@ class RowwiseValidator(Validator):
         Returns:
         a list of casted values
         """
-        print("🇰🇷 ----- ", row_values)
         return [RowwiseValidator.cast_value(value) for value in row_values]
 
     @staticmethod
@@ -190,14 +189,8 @@ class RowwiseValidator(Validator):
         """
 
         if content_type == "application/json":
-            print("🇸🇨 json")
-            print(source)
-            print("🇸🇬 end json")
             data = utils.to_tabular(source)
         elif content_type == "text/csv":
-            print("🇸🇨 csv")
-            print(source)
-            print("🇸🇬 end csv")
             data = utils.reorder_csv(source)
         else:
             raise UnsupportedContentTypeException(content_type, type(self).__name__)
