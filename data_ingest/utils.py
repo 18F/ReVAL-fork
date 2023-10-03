@@ -85,7 +85,7 @@ def to_tabular(incoming):
     o_headers = get_ordered_headers(headers)
 
     output = [o_headers]
-    for json_key in jsonbuffer:
+    for json_key in o_headers:
         row = jsonbuffer[json_key]
         row_data = []
         for header in o_headers:
