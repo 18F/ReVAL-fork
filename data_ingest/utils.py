@@ -46,6 +46,16 @@ def get_ordered_headers(headers):
     return o_headers
 
 
+def process_row(row, headers):
+    row_data = []
+    for header in headers:
+        logger.debug(f"Fetching: {header}")
+        val = row.get(header, None)
+        row_data.append(val)
+        logger.debug(f"Set to: {val}")
+    return row_data
+
+
 def to_tabular(incoming):
     """Coerce incoming json to tabular structure for tabulator
     [
@@ -59,7 +69,7 @@ def to_tabular(incoming):
     are data rows containing data values in the order of headers defined
     in the first row.
     """
-    if incoming.get("source") is None:
+    if incoming is None:
         return incoming
 
     data = incoming.copy()
@@ -70,30 +80,28 @@ def to_tabular(incoming):
 
     try:
         print("🐶")
-        print(data["source"])
-        jsonbuffer = json.loads(data["source"].decode())[0]
+        print(data)
+        jsonbuffer = json.loads(data.decode())
         print("🦁")
     except (TypeError, KeyError, AttributeError):
-        print("🐯")
-        jsonbuffer = data["source"]
+        print("🐯 ERROR")
+        jsonbuffer = data
 
-    headers = []
-    for json_key in jsonbuffer:
-        print("🐭", json_key)
-        headers.append(json_key)
+    headers = set()
 
+    # If dict of values appear in a list, I assume there may be more than one dict of values
+    # This should work with one or more values.
+    for data_dict in jsonbuffer:
+        headers = headers.union(set(data_dict.keys()))
     o_headers = get_ordered_headers(headers)
 
     output = [o_headers]
-    for json_key in o_headers:
-        row = jsonbuffer[json_key]
-        row_data = []
-        for header in o_headers:
-            logger.debug(f"Fetching: {header}")
-            val = row.get(header, None)
-            row_data.append(val)
-            logger.debug(f"Set to: {val}")
-        output.append(row_data)
+
+    for data_dict in jsonbuffer:
+        for row in data_dict:
+            row_data = process_row(row, o_headers)
+            output.append(row_data)
+
     return output
 
 
