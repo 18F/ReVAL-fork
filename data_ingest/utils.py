@@ -101,8 +101,8 @@ def to_tabular(incoming):
     output = [o_headers]
 
     for data_dict in jsonbuffer:
-        for row in data_dict:
-            row_data = process_row(row, o_headers)
+        for row_key in data_dict:
+            row_data = process_row(data_dict[row_key], o_headers)
             output.append(row_data)
 
     return output
