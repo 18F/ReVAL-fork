@@ -80,11 +80,11 @@ def to_tabular(incoming):
     jsonbuffer = None
 
     try:
-        print("🐶")
-        print(type(data))
-        print(data)
+        # print("🐶")
+        # print(type(data))
+        # print(data)
         jsonbuffer = json.loads(data["source"].decode())
-        print("🦁")
+        print("🦁", jsonbuffer)
     except (TypeError, KeyError, AttributeError):
         print("🐯 ERROR")
         jsonbuffer = data.decode()["source"]
@@ -94,16 +94,18 @@ def to_tabular(incoming):
     # If dict of values appear in a list, I assume there may be more than one dict of values
     # This should work with one or more values.
     for data_dict in jsonbuffer:
-        print("🥸 ", data_dict)
         headers = headers.union(set(data_dict.keys()))
     o_headers = get_ordered_headers(headers)
 
     output = [o_headers]
 
     for data_dict in jsonbuffer:
-        for row_key in data_dict:
-            row_data = process_row(data_dict[row_key], o_headers)
-            output.append(row_data)
+        print("👅", type(data_dict), data_dict)
+        print(
+            "✅",
+        )
+        row_data = process_row(data_dict[row_key], o_headers)
+        output.append(row_data)
 
     return output
 
