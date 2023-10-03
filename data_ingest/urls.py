@@ -47,8 +47,8 @@ urlpatterns = [
         views.insert,
         name="insert",
     ),
-    path("api/api-token-auth", authtoken_views.obtain_auth_token),
-    path("api/validate", api_views.validate, name="validate"),
+    path("api/api-token-auth/", authtoken_views.obtain_auth_token),
+    path("api/validate/", api_views.validate, name="validate"),
     path("api/", include(router.urls)),
     path(
         "",
