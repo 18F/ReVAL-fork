@@ -46,12 +46,12 @@ def get_ordered_headers(headers):
     return o_headers
 
 
-def process_row(row, headers):
-    print("➡️", headers, type(row), row)
+def process_row(data_dict, headers):
+    print("➡️", headers, type(data_dict), data_dict)
     row_data = []
     for header in headers:
         logger.debug(f"Fetching: {header}")
-        val = row.get(header, None)
+        val = data_dict.get(header, None)
         row_data.append(val)
         logger.debug(f"Set to: {val}")
     return row_data
@@ -101,10 +101,7 @@ def to_tabular(incoming):
 
     for data_dict in jsonbuffer:
         print("👅", type(data_dict), data_dict)
-        print(
-            "✅",
-        )
-        row_data = process_row(data_dict[row_key], o_headers)
+        row_data = process_row(data_dict, o_headers)
         output.append(row_data)
 
     return output
