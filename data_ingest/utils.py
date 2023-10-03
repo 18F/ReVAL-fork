@@ -81,7 +81,6 @@ def to_tabular(incoming):
     try:
         jsonbuffer = json.loads(data["source"].decode())
     except (TypeError, KeyError, AttributeError):
-        print("🚀", type(data), data)
         jsonbuffer = data
 
     headers = set()
